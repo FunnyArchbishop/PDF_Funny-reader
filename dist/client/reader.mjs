@@ -2,6 +2,7 @@ import * as db from "./reader-store.mjs";
 import {deckRecord, openMedia, readManifest, remoteUrl} from "./reader-media.mjs";
 import {makeContext, studyPages} from "./reader-review.mjs";
 import {createPdfZoom} from "./reader-zoom.mjs";
+import {createPdfTools} from "./reader-pdf-tools.mjs";
 
 const $ = id => document.getElementById(id);
 const decks = new Map();
@@ -16,6 +17,21 @@ const preview = $("preview");
 const pdfZoom = createPdfZoom(preview);
 let active, view, opening, rendering, selectedStudy, reviewBusy = false, importing = false;
 let searchRun, searchMatches;
+const outlinePdfs = new Set();
+const pdfTools = createPdfTools({
+  toggleFonts(id) {
+    if (outlinePdfs.has(id)) outlinePdfs.delete(id);
+    else outlinePdfs.add(id);
+    void route({reload: true});
+  },
+  async addFile(file, meta, open) {
+    const deck = await deckRecord({file, meta});
+    await db.importDeck(deck, file);
+    decks.set(deck.id, deck);
+    library();
+    if (open) navigate(deck.id, 1);
+  }
+});
 
 function node(tag, text, className) {
   const el = document.createElement(tag);
@@ -163,7 +179,7 @@ function showTab(review, noDeck = false) {
   if (review) showReview();
 }
 
-async function route() {
+async function route({reload = false} = {}) {
   const [, encoded, value] = location.hash.slice(1).split("/");
   const recent = [...progress.values()].sort((a, b) => (b.updated || 0) - (a.updated || 0))[0];
   const fallback = decks.get(recent?.id) || decks.values().next().value;
@@ -177,18 +193,19 @@ async function route() {
   const deck = decks.get(id) || decks.get(active?.id) || fallback;
   showTab(false, !deck);
   if (!deck) return;
-  const page = Number(value) || progress.get(deck.id)?.page || 1;
-  if (view && active?.id === deck.id) {
+  const page = (reload ? active?.page : Number(value)) || progress.get(deck.id)?.page || 1;
+  if (!reload && view && active?.id === deck.id) {
     await showPage(deck, page);
     return;
   }
-  if (active?.id === deck.id && opening && !opening.signal.aborted) {
+  if (!reload && active?.id === deck.id && opening && !opening.signal.aborted) {
     active.page = page;
     return;
   }
   opening?.abort();
   rendering?.abort();
   pdfZoom.update();
+  pdfTools.update();
   searchRun?.abort();
   searchMatches = undefined;
   view?.close?.();
@@ -215,7 +232,10 @@ async function route() {
   chat();
   try {
     const file = deck.url ? undefined : (await db.get("files", deck.id))?.file;
-    const loaded = await openMedia(deck, file, host, signal);
+    signal.throwIfAborted();
+    const outlineFonts = outlinePdfs.has(deck.id);
+    pdfTools.update(deck, file, outlineFonts);
+    const loaded = await openMedia(deck, file, host, signal, {outlineFonts});
     if (signal.aborted) { loaded.close?.(); return; }
     view = loaded;
     if (!view.count) throw new Error("未找到可阅读的页。");

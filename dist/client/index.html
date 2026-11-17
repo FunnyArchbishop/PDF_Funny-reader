@@ -54,6 +54,7 @@
         <button id="full">全屏</button>
         <button id="pdf-fit" aria-pressed="true" hidden>适合宽度</button>
         <button id="pdf-zoom" aria-pressed="false" hidden>局部放大</button>
+        <button id="pdf-tools" hidden>PDF 工具</button>
         <button id="mark" aria-pressed="false">加入复习</button>
         <button id="include" aria-pressed="false">选页问 AI</button>
       </div>
@@ -116,6 +117,34 @@
     </header>
     <p id="pdf-detail-status" role="status" class="muted"></p>
     <div id="pdf-detail-body"></div>
+  </dialog>
+  <dialog id="pdf-tools-dialog" aria-labelledby="pdf-tools-title">
+    <header><h2 id="pdf-tools-title">PDF 工具</h2><form method="dialog"><button autofocus>关闭</button></form></header>
+    <p id="pdf-tools-source" class="muted"></p>
+    <section>
+      <h3>公式或符号不完整</h3>
+      <div class="toolbar">
+        <button id="pdf-font-mode" aria-pressed="false">字体兼容模式</button>
+        <a id="pdf-native" target="_blank" rel="noopener noreferrer">用浏览器打开原 PDF ↗</a>
+      </div>
+      <p class="muted">字体兼容模式会重新绘制字形。若原件打不开或疑似损坏，可尝试修复副本。</p>
+      <button id="pdf-repair" disabled>用 Stirling‑PDF 修复副本</button>
+    </section>
+    <section>
+      <h3>PDFMathTranslate 论文翻译</h3>
+      <div class="form-row">
+        <label>原文语言<select id="pdf-lang-from"></select></label>
+        <label>译文语言<select id="pdf-lang-to"></select></label>
+      </div>
+      <p class="muted">修复或翻译会将当前 PDF 发给对应服务，翻译服务也可能把文字发给所配置的翻译引擎。</p>
+      <button id="pdf-translate" class="primary" disabled>开始翻译</button>
+      <div id="pdf-translation-files" class="toolbar" hidden>
+        <button type="button" data-translation="dual">打开双语版</button>
+        <button type="button" data-translation="mono">打开译文版</button>
+      </div>
+    </section>
+    <p id="pdf-tools-status" role="status"></p>
+    <p id="pdf-tools-setup" class="muted" hidden>灰色按钮需要配置对应服务。自托管时可按项目说明连接 <a href="https://docs.stirlingpdf.com/Developers/API/" target="_blank" rel="noopener noreferrer">Stirling‑PDF</a> 或 <a href="https://github.com/PDFMathTranslate/PDFMathTranslate/blob/main/docs/APIS.md" target="_blank" rel="noopener noreferrer">PDFMathTranslate</a>。</p>
   </dialog>
 </body>
 </html>

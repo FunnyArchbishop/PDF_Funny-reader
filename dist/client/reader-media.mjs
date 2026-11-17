@@ -81,7 +81,11 @@ function htmlPages(raw) {
   }));
 }
 
-export async function openMedia(deck, file, host, signal) {
+export async function readToolPdf(deck, file, signal) {
+  return file || new Blob([await content(deck, file, signal)], {type: "application/pdf"});
+}
+
+export async function openMedia(deck, file, host, signal, {outlineFonts = false} = {}) {
   if (!file && !deck.url) throw new Error("找不到原文件，请重新导入这份课件。");
   if (deck.kind === "html") {
     const raw = file && new TextDecoder().decode(await content(deck, file, signal));
@@ -102,6 +106,7 @@ export async function openMedia(deck, file, host, signal) {
     const pdfjs = await import(new URL("pdf.min.mjs", pdfBase));
     pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdf.worker.min.mjs", pdfBase).href;
     const task = pdfjs.getDocument({data: bytes, isEvalSupported: false,
+      disableFontFace: outlineFonts, useSystemFonts: true, iccUrl: new URL("iccs/", pdfBase).href,
       cMapUrl: new URL("cmaps/", pdfBase).href, cMapPacked: true,
       standardFontDataUrl: new URL("standard_fonts/", pdfBase).href, wasmUrl: new URL("wasm/", pdfBase).href});
     try {

@@ -5,6 +5,7 @@ import {extname, relative, resolve, sep} from "node:path";
 import {Readable} from "node:stream";
 import {fileURLToPath} from "node:url";
 import {askFromLocalPreview} from "./dist/server/index.js";
+import {handlePdfTools} from "./dist/server/pdf-tools.mjs";
 
 const root = await realpath(fileURLToPath(new URL("./dist/client/", import.meta.url)));
 const port = Number(process.env.READER_PORT || 4174);
@@ -26,14 +27,16 @@ const server = createServer(async (incoming, outgoing) => {
   try {
     const url = new URL(incoming.url, origin);
     if (url.origin !== origin) { outgoing.writeHead(400).end(); return; }
-    if (url.pathname === "/api/deepseek") {
+    if (url.pathname === "/api/deepseek" || url.pathname.startsWith("/api/pdf-tools/")) {
       const method = incoming.method;
       const hasBody = method !== "GET" && method !== "HEAD";
       const request = new Request(url, {method, headers: incoming.headers,
         body: hasBody ? Readable.toWeb(incoming) : undefined, duplex: hasBody ? "half" : undefined});
-      const result = await askFromLocalPreview(request, process.env);
+      const result = url.pathname === "/api/deepseek" ? await askFromLocalPreview(request, process.env)
+        : await handlePdfTools(request, process.env, true);
       outgoing.writeHead(result.status, Object.fromEntries(result.headers));
-      outgoing.end(Buffer.from(await result.arrayBuffer()));
+      if (result.body) Readable.fromWeb(result.body).on("error", () => outgoing.destroy()).pipe(outgoing);
+      else outgoing.end();
       return;
     }
     if (incoming.method !== "GET" && incoming.method !== "HEAD") { outgoing.writeHead(405).end(); return; }
