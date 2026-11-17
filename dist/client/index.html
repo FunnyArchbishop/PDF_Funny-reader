@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>课件阅读器 · StdOverwatch</title>
+  <link rel="stylesheet" href="./reader.css">
+  <script defer src="./vendor/marked.js"></script>
+  <script defer src="./vendor/katex.js"></script>
+  <script defer src="./vendor/purify.js"></script>
+  <script defer src="./answer-format.js"></script>
+  <script type="module" src="./reader.mjs"></script>
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span aria-hidden="true">▤</span> StdOverwatch</div>
+    <nav aria-label="工作区">
+      <button id="read-tab" aria-current="page">课件阅读</button>
+      <button id="review-tab">复习工作台</button>
+    </nav>
+  </header>
+  <main class="layout">
+    <aside class="library" aria-label="课件库">
+      <div class="library-head">
+        <h1>课件库 <small id="deck-count"></small></h1>
+        <label class="primary file">导入课件<input type="file" id="files" multiple accept=".pptx,.pdf,.html,.htm,.json"></label>
+        <label class="file secondary">导入文件夹<input type="file" id="folder" webkitdirectory multiple></label>
+        <p class="muted">支持 PPTX、PDF、HTML 和课件清单。导入文件保存在当前浏览器。</p>
+        <details class="manifest-settings"><summary>课件清单设置</summary>
+          <label for="manifest-base">相对链接基址（可选）</label>
+          <input type="url" id="manifest-base" placeholder="https://example.com/course/">
+        </details>
+        <input type="search" id="deck-search" placeholder="搜索课件名称" aria-label="搜索课件名称">
+        <p id="library-status" role="status" class="muted"></p>
+      </div>
+      <div id="deck-list" class="deck-list"></div>
+    </aside>
+    <section id="empty-panel" class="work empty" aria-label="开始阅读" hidden>
+      <div>
+        <h2>导入课件，开始阅读</h2>
+        <p>打开 PPTX、PDF 或 HTML。在课件页旁提问、记笔记，之后可以按阅读记录生成复习材料。</p>
+        <button id="empty-import" class="primary">选择课件</button>
+      </div>
+    </section>
+    <section id="reader-panel" class="work" aria-label="阅读区" hidden>
+      <header class="work-head">
+        <div><p class="eyebrow" id="deck-group"></p><h2 id="deck-title">课件阅读</h2></div>
+        <a id="source-link" hidden target="_blank" rel="noopener noreferrer">打开原件 ↗</a>
+      </header>
+      <div class="toolbar">
+        <button id="prev" aria-label="上一页">←</button>
+        <form id="page-form"><input id="page" aria-label="页码" type="number" min="1" value="1" required><span id="total"></span></form>
+        <button id="next" aria-label="下一页">→</button>
+        <button id="full">放大</button>
+        <button id="mark" aria-pressed="false">加入复习</button>
+        <button id="include" aria-pressed="false">选页问 AI</button>
+      </div>
+      <div id="preview" class="preview" aria-label="幻灯片预览"></div>
+      <p id="preview-status" class="muted" role="status"></p>
+      <div class="page-tools">
+        <label for="page-search">课件页索引</label>
+        <input type="search" id="page-search" placeholder="按页码或课件文字查找">
+        <select id="page-results" size="5" aria-label="幻灯片列表"></select>
+        <p id="page-search-status" class="muted" role="status"></p>
+      </div>
+      <details class="text-panel"><summary>本页文字</summary><pre id="transcript"></pre></details>
+      <label class="note-label" for="note">阅读笔记</label>
+      <textarea id="note" rows="3" maxlength="2000" placeholder="记录卡住的地方、易错点或自己的理解"></textarea>
+      <p id="note-status" class="muted" role="status"></p>
+    </section>
+    <aside id="chat-panel" class="chat" aria-label="AI 助教" hidden>
+      <div class="chat-head"><h2>AI 助教</h2><p id="chat-context" class="muted"></p></div>
+      <div id="chat-sources" class="chips"></div>
+      <div id="messages" class="messages"></div>
+      <form id="chat-form">
+        <label for="question">向 DeepSeek 提问</label>
+        <textarea id="question" rows="3" maxlength="2000" placeholder="例如：这几页的概念有什么联系？" required></textarea>
+        <button class="primary">发送</button>
+      </form>
+      <p id="chat-status" role="status" class="muted"></p>
+      <details id="ai-settings"><summary>AI 设置</summary>
+        <label for="api-key">DeepSeek API Key</label>
+        <input id="api-key" type="password" autocomplete="off" maxlength="185" placeholder="优先使用站点配置">
+        <p class="muted">密钥仅在本次打开页面时使用。提问会发送所选页的文字、笔记和近期对话。</p>
+      </details>
+    </aside>
+    <section id="review-panel" class="work review" aria-label="复习工作台" hidden>
+      <header class="work-head"><div><p class="eyebrow">学习记录</p><h2>复习工作台</h2></div><button id="export" disabled>导出 Markdown</button></header>
+      <p>把课件内容、标记页、笔记和提问汇总成一份复习材料。</p>
+      <form id="review-form">
+        <div class="form-row">
+          <label>课件范围<select id="scope"><option value="deck">当前课件</option><option value="activity">有阅读记录的课件</option><option value="picked">选择课件</option></select></label>
+          <label>输出类型<select id="review-type"><option value="outline">复习大纲</option><option value="detail">详细讲义</option><option value="quiz">自测题</option></select></label>
+        </div>
+        <div id="review-picker" hidden><label for="review-decks">选择课件（可多选）</label><select id="review-decks" multiple size="5"></select></div>
+        <label for="goal">复习要求</label>
+        <textarea id="goal" rows="3" maxlength="700" placeholder="例如：准备期末，优先讲寻址方式和流水线，给出两道计算题"></textarea>
+        <p class="muted">生成时优先纳入标记页、笔记和近期提问，并选取课件中的代表页。</p>
+        <button class="primary">生成复习材料</button>
+        <button type="button" id="expand-outline" hidden>按已保存大纲展开</button>
+        <p id="review-status" role="status" class="muted"></p>
+      </form>
+      <div class="review-grid">
+        <section class="review-card"><h3>我的标记与问题</h3><div id="review-activity"></div></section>
+        <section class="review-card"><h3>生成结果</h3><div id="study-tabs" class="chips" aria-label="生成记录"></div><div id="study-output"></div><div class="chips" id="study-sources"></div></section>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
