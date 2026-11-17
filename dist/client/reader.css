@@ -12,6 +12,11 @@ h1,h2,h3,p{margin:0}
 h1,h2{font-size:1.25rem}
 small,.muted,.eyebrow{color:var(--muted);font-size:.83rem}
 [hidden]{display:none!important}
+.pages-only{display:none}
+html[data-reader-edition="pages"] .pages-only{display:block}
+html[data-reader-edition="pages"] .requires-backend{display:none!important}
+html[data-reader-edition="pages"] .layout{grid-template-columns:minmax(195px,250px) minmax(0,1fr)}
+html[data-reader-edition="pages"] .review-grid{grid-template-columns:minmax(0,1fr);margin-top:1rem}
 .primary{background:var(--accent);border-color:var(--accent);color:white;font-weight:650}
 .primary:not(:disabled):hover,.file.primary:hover{background:#3e328a}
 .top{min-height:64px;background:#1d1c31;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.6rem clamp(.8rem,3vw,2.6rem)}

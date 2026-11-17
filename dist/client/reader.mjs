@@ -6,6 +6,7 @@ import {createPdfTools} from "./reader-pdf-tools.mjs";
 import {bindCourseControls} from "./reader-courses.mjs";
 
 const $ = id => document.getElementById(id);
+const backendEnabled = document.documentElement.dataset.readerEdition !== "pages";
 const decks = new Map();
 const activity = new Map();
 const progress = new Map();
@@ -20,6 +21,7 @@ let active, view, opening, rendering, selectedStudy, reviewBusy = false, importi
 let searchRun, searchMatches;
 const outlinePdfs = new Set();
 const pdfTools = createPdfTools({
+  backendEnabled,
   toggleFonts(id) {
     if (outlinePdfs.has(id)) outlinePdfs.delete(id);
     else outlinePdfs.add(id);
@@ -479,7 +481,9 @@ function showReview() {
     if (record.turns.length) item.append(node("p", record.turns.at(-1).question, "muted"));
     activityHost.append(item);
   }
-  if (!records.length) activityHost.append(node("p", "标记课件页、记录笔记或向 AI 提问后，会在这里看到记录。", "muted"));
+  if (!records.length) activityHost.append(node("p", backendEnabled
+    ? "标记课件页、记录笔记或向 AI 提问后，会在这里看到记录。"
+    : "加入复习的课件页和阅读笔记会显示在这里。", "muted"));
   const picker = $("review-decks");
   const selected = new Set(Array.from(picker.selectedOptions, option => option.value));
   picker.replaceChildren(...Array.from(decks.values(), deck => {
@@ -651,6 +655,7 @@ try {
   study.push(...results.sort((a, b) => b.created - a.created));
 } catch (error) { report("library-status", error); }
 library();
+if (!backendEnabled) $("review-activity-title").textContent = "我的标记与笔记";
 bindCourseControls({isBusy: () => importing || reviewBusy || pendingChat.size > 0 || pdfTools.busy,
   flush: db.flush});
 window.addEventListener("hashchange", route);

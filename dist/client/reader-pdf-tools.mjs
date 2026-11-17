@@ -13,7 +13,7 @@ async function toolRequest(path, options) {
   return result;
 }
 
-export function createPdfTools({toggleFonts, addFile}) {
+export function createPdfTools({toggleFonts, addFile, backendEnabled = true}) {
   const button = $("pdf-tools"), dialog = $("pdf-tools-dialog"), setup = $("pdf-tools-setup");
   const repair = $("pdf-repair"), translate = $("pdf-translate");
   const from = $("pdf-lang-from"), to = $("pdf-lang-to"), files = $("pdf-translation-files");
@@ -75,6 +75,7 @@ export function createPdfTools({toggleFonts, addFile}) {
     if (!current) return;
     dialog.showModal();
     refresh();
+    if (!backendEnabled) return;
     try { services = await (await toolRequest("status")).json(); }
     catch { services = {}; }
     setup.hidden = Boolean(services.repair && services.translate);

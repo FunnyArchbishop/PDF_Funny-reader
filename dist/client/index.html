@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-reader-edition="full">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -18,6 +18,7 @@
       <button id="read-tab" aria-current="page">课件阅读</button>
       <button id="review-tab">复习工作台</button>
     </nav>
+    <a class="pages-only" href="https://stdoverwatch-ppt-reader.arisenthyme3.chatgpt.site/">完整版 ↗</a>
   </header>
   <main class="layout">
     <aside class="library" aria-label="课件库">
@@ -47,7 +48,8 @@
     <section id="empty-panel" class="work empty" aria-label="开始阅读" hidden>
       <div>
         <h2>导入课件，开始阅读</h2>
-        <p>打开 PPTX、PDF 或 HTML。在课件页旁提问、记笔记，之后可以按阅读记录生成复习材料。</p>
+        <p class="requires-backend">打开 PPTX、PDF 或 HTML。在课件页旁提问、记笔记，之后可以按阅读记录生成复习材料。</p>
+        <p class="pages-only">打开 PPTX、PDF 或 HTML，按课表整理文件、标记重点并保存笔记。</p>
         <button id="empty-import" class="primary">选择课件</button>
       </div>
     </section>
@@ -65,7 +67,7 @@
         <button id="pdf-zoom" aria-pressed="false" hidden>局部放大</button>
         <button id="pdf-tools" hidden>PDF 工具</button>
         <button id="mark" aria-pressed="false">加入复习</button>
-        <button id="include" aria-pressed="false">选页问 AI</button>
+        <button id="include" class="requires-backend" aria-pressed="false">选页问 AI</button>
       </div>
       <p id="pdf-zoom-help" class="muted zoom-help" hidden>拖框放大选区，或点击一个位置放大。Enter 放大视野中心，Esc 取消。</p>
       <div id="preview" class="preview" aria-label="幻灯片预览" tabindex="0"></div>
@@ -81,7 +83,7 @@
       <textarea id="note" rows="3" maxlength="2000" placeholder="记录卡住的地方、易错点或自己的理解"></textarea>
       <p id="note-status" class="muted" role="status"></p>
     </section>
-    <aside id="chat-panel" class="chat" aria-label="AI 助教" hidden>
+    <aside id="chat-panel" class="chat requires-backend" aria-label="AI 助教" hidden>
       <div class="chat-head"><h2>AI 助教</h2><p id="chat-context" class="muted"></p></div>
       <div id="chat-sources" class="chips"></div>
       <div id="messages" class="messages"></div>
@@ -98,9 +100,10 @@
       </details>
     </aside>
     <section id="review-panel" class="work review" aria-label="复习工作台" hidden>
-      <header class="work-head"><div><p class="eyebrow">学习记录</p><h2>复习工作台</h2></div><button id="export" disabled>导出 Markdown</button></header>
-      <p>把课件内容、标记页、笔记和提问汇总成一份复习材料。</p>
-      <form id="review-form">
+      <header class="work-head"><div><p class="eyebrow">学习记录</p><h2>复习工作台</h2></div><button id="export" class="requires-backend" disabled>导出 Markdown</button></header>
+      <p class="requires-backend">把课件内容、标记页、笔记和提问汇总成一份复习材料。</p>
+      <p class="pages-only">回看这个课表标记过的页面和笔记。AI 生成大纲、讲义和自测题请使用顶部的「完整版」。</p>
+      <form id="review-form" class="requires-backend">
         <div class="form-row">
           <label>课件范围<select id="scope"><option value="deck">当前课件</option><option value="activity">有阅读记录的课件</option><option value="picked">选择课件</option></select></label>
           <label>输出类型<select id="review-type"><option value="outline">复习大纲</option><option value="detail">详细讲义</option><option value="quiz">自测题</option></select></label>
@@ -114,8 +117,8 @@
         <p id="review-status" role="status" class="muted"></p>
       </form>
       <div class="review-grid">
-        <section class="review-card"><h3>我的标记与问题</h3><div id="review-activity"></div></section>
-        <section class="review-card"><h3>生成结果</h3><div id="study-tabs" class="chips" aria-label="生成记录"></div><div id="study-output"></div><div class="chips" id="study-sources"></div></section>
+        <section class="review-card"><h3 id="review-activity-title">我的标记与问题</h3><div id="review-activity"></div></section>
+        <section class="review-card requires-backend"><h3>生成结果</h3><div id="study-tabs" class="chips" aria-label="生成记录"></div><div id="study-output"></div><div class="chips" id="study-sources"></div></section>
       </div>
     </section>
   </main>
@@ -148,10 +151,10 @@
         <button id="pdf-font-mode" aria-pressed="false">字体兼容模式</button>
         <a id="pdf-native" target="_blank" rel="noopener noreferrer">用浏览器打开原 PDF ↗</a>
       </div>
-      <p class="muted">字体兼容模式会重新绘制字形。若原件打不开或疑似损坏，可尝试修复副本。</p>
-      <button id="pdf-repair" disabled>用 Stirling‑PDF 修复副本</button>
+      <p class="muted">字体兼容模式会重新绘制字形。</p>
+      <button id="pdf-repair" class="requires-backend" disabled>用 Stirling‑PDF 修复副本</button>
     </section>
-    <section>
+    <section class="requires-backend">
       <h3>PDFMathTranslate 论文翻译</h3>
       <div class="form-row">
         <label>原文语言<select id="pdf-lang-from"></select></label>
@@ -165,7 +168,8 @@
       </div>
     </section>
     <p id="pdf-tools-status" role="status"></p>
-    <p id="pdf-tools-setup" class="muted" hidden>灰色按钮需要配置对应服务。自托管时可按项目说明连接 <a href="https://docs.stirlingpdf.com/Developers/API/" target="_blank" rel="noopener noreferrer">Stirling‑PDF</a> 或 <a href="https://github.com/PDFMathTranslate/PDFMathTranslate/blob/main/docs/APIS.md" target="_blank" rel="noopener noreferrer">PDFMathTranslate</a>。</p>
+    <p class="pages-only muted">需要修复或翻译 PDF 时，请打开 <a href="https://stdoverwatch-ppt-reader.arisenthyme3.chatgpt.site/">完整版</a>，并连接对应服务。</p>
+    <p id="pdf-tools-setup" class="muted requires-backend" hidden>灰色按钮需要配置对应服务。自托管时可按项目说明连接 <a href="https://docs.stirlingpdf.com/Developers/API/" target="_blank" rel="noopener noreferrer">Stirling‑PDF</a> 或 <a href="https://github.com/PDFMathTranslate/PDFMathTranslate/blob/main/docs/APIS.md" target="_blank" rel="noopener noreferrer">PDFMathTranslate</a>。</p>
   </dialog>
 </body>
 </html>

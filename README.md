@@ -2,6 +2,8 @@
 
 这是独立版课件阅读器。整个文件夹可单独复制使用。打开后导入自己的课件即可开始。
 
+[GitHub 网页版](https://funnyarchbishop.github.io/PDF_Funny-reader/) 提供课表管理、课件阅读、局部放大、重点标记和笔记。AI 问答、PDF 修复和翻译可在[完整版](https://stdoverwatch-ppt-reader.arisenthyme3.chatgpt.site/)中使用，并连接相应服务。两个网址的课件库分别保存在浏览器里。
+
 ```powershell
 node serve.mjs
 ```
