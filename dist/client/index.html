@@ -20,7 +20,6 @@
       <button id="review-tab">复习工作台</button>
     </nav>
     <div class="top-actions">
-      <a class="pages-only" href="https://stdoverwatch-ppt-reader.arisenthyme3.chatgpt.site/">完整版 ↗</a>
       <button id="help-button" aria-haspopup="dialog">帮助</button>
       <button id="settings-button" aria-haspopup="dialog"><span aria-hidden="true">⚙</span> 设置</button>
     </div>
@@ -65,7 +64,7 @@
         <button id="pdf-zoom" aria-pressed="false" hidden>局部放大</button>
         <button id="pdf-tools" hidden>PDF 工具</button>
         <button id="mark" aria-pressed="false">加入复习</button>
-        <button id="include" class="requires-backend" aria-pressed="false">选页问 AI</button>
+        <button id="include" aria-pressed="false">选页问 AI</button>
       </div>
       <p id="pdf-zoom-help" class="muted zoom-help" hidden>点击或框选 · Esc 取消</p>
       <div id="preview" class="preview" aria-label="幻灯片预览" tabindex="0"></div>
@@ -81,7 +80,7 @@
       <textarea id="note" rows="3" maxlength="2000"></textarea>
       <p id="note-status" class="muted" role="status"></p>
     </section>
-    <aside id="chat-panel" class="chat requires-backend" aria-label="AI 助教" hidden>
+    <aside id="chat-panel" class="chat" aria-label="AI 助教" hidden>
       <div class="chat-head"><h2>AI 助教</h2><p id="chat-context" class="muted"></p></div>
       <div id="chat-sources" class="chips"></div>
       <div id="messages" class="messages"></div>
@@ -93,8 +92,8 @@
       <p id="chat-status" role="status" class="muted"></p>
     </aside>
     <section id="review-panel" class="work review" aria-label="复习工作台" hidden>
-      <header class="work-head"><h2>复习工作台</h2><button id="export" class="requires-backend" disabled>导出 Markdown</button></header>
-      <form id="review-form" class="requires-backend">
+      <header class="work-head"><h2>复习工作台</h2><button id="export" disabled>导出 Markdown</button></header>
+      <form id="review-form">
         <div class="form-row">
           <label>课件范围<select id="scope"><option value="deck">当前课件</option><option value="activity">有阅读记录的课件</option><option value="picked">选择课件</option></select></label>
           <label>输出类型<select id="review-type"><option value="outline">复习大纲</option><option value="detail">详细讲义</option><option value="quiz">自测题</option></select></label>
@@ -108,7 +107,7 @@
       </form>
       <div class="review-grid">
         <section class="review-card"><h3 id="review-activity-title">我的标记与问题</h3><div id="review-activity"></div></section>
-        <section class="review-card requires-backend"><h3>生成结果</h3><div id="study-tabs" class="chips" aria-label="生成记录"></div><div id="study-output"></div><div class="chips" id="study-sources"></div></section>
+        <section class="review-card"><h3>生成结果</h3><div id="study-tabs" class="chips" aria-label="生成记录"></div><div id="study-output"></div><div class="chips" id="study-sources"></div></section>
       </div>
     </section>
   </main>
@@ -134,7 +133,21 @@
       <h3>当前 PDF</h3>
       <button id="pdf-font-mode" aria-pressed="false">字体兼容模式</button>
     </section>
-    <section class="requires-backend">
+    <section class="pages-only">
+      <h3>后端连接</h3>
+      <form id="backend-form">
+        <label for="backend-address">服务地址</label>
+        <input id="backend-address" type="url" autocomplete="off" required>
+        <label for="backend-code">配对码</label>
+        <input id="backend-code" type="password" autocomplete="off" maxlength="32" required>
+        <div class="toolbar">
+          <button id="backend-connect" class="primary" disabled>连接</button>
+          <button id="backend-disconnect" type="button" disabled>断开</button>
+        </div>
+        <p id="backend-status" class="muted" role="status"></p>
+      </form>
+    </section>
+    <section>
       <h3>AI</h3>
       <label for="api-key">DeepSeek API Key</label>
       <input id="api-key" type="password" autocomplete="off" maxlength="185">
@@ -145,7 +158,7 @@
     <section>
       <h3>课表和导入</h3>
       <p>按课程新建课表，再导入 PPTX、PDF、HTML 或 Paper-Master 清单。旧版 PPT 可以先另存为 PPTX 或 PDF。清单里的相对链接可以在设置里填写基址。</p>
-      <p>文件、进度和笔记按课表保存在当前浏览器。GitHub 网页版和完整版的课件库各自保存。</p>
+      <p>文件、进度和笔记按课表保存在当前浏览器。</p>
     </section>
     <section>
       <h3>阅读和复习</h3>
@@ -153,13 +166,14 @@
       <p>HTML 演示用其内置控件翻页。点「加入复习」或记下笔记后，可从复习工作台跳回原页。</p>
     </section>
     <section class="pages-only">
-      <h3>完整版</h3>
-      <p>AI 问答、生成复习材料、PDF 修复和翻译需在 <a href="https://stdoverwatch-ppt-reader.arisenthyme3.chatgpt.site/">完整版</a>连接相应服务。</p>
+      <h3>连接后端</h3>
+      <p>在项目目录运行 <code>node serve.mjs</code>，再到设置输入终端显示的服务地址和配对码。若浏览器提示访问本地网络，允许后才能连接。</p>
+      <p>配对保留在当前标签页。重启后端后，请用新的配对码连接。<a href="https://github.com/FunnyArchbishop/PDF_Funny-reader#readme">查看安装与服务配置</a></p>
     </section>
-    <section class="requires-backend">
+    <section>
       <h3>AI 和 PDF 服务</h3>
       <p>可按页提问，或选取多页一起提问。生成复习材料时会优先参考标记、笔记和近期提问。手动填入的 DeepSeek Key 只在当前页面有效。</p>
-      <p>修复和翻译会把当前 PDF 发给相应服务。未配置时可参考 <a href="https://docs.stirlingpdf.com/Developers/API/" target="_blank" rel="noopener noreferrer">Stirling‑PDF</a> 和 <a href="https://github.com/PDFMathTranslate/PDFMathTranslate/blob/main/docs/APIS.md" target="_blank" rel="noopener noreferrer">PDFMathTranslate</a> 的接入说明。</p>
+      <p>问答会发送所选页的文字、笔记和近期对话；修复和翻译会发送当前 PDF。请连接你信任的后端。PDF 服务可参考 <a href="https://docs.stirlingpdf.com/Developers/API/" target="_blank" rel="noopener noreferrer">Stirling‑PDF</a> 和 <a href="https://github.com/PDFMathTranslate/PDFMathTranslate/blob/main/docs/APIS.md" target="_blank" rel="noopener noreferrer">PDFMathTranslate</a> 的接入说明。</p>
     </section>
   </dialog>
   <dialog id="course-dialog" aria-labelledby="course-dialog-title">
@@ -189,9 +203,9 @@
       <div class="toolbar">
         <a id="pdf-native" target="_blank" rel="noopener noreferrer">用浏览器打开原 PDF ↗</a>
       </div>
-      <button id="pdf-repair" class="requires-backend" disabled>用 Stirling‑PDF 修复副本</button>
+      <button id="pdf-repair" disabled>用 Stirling‑PDF 修复副本</button>
     </section>
-    <section class="requires-backend">
+    <section>
       <h3>PDFMathTranslate 论文翻译</h3>
       <div class="form-row">
         <label>原文语言<select id="pdf-lang-from"></select></label>
@@ -204,7 +218,7 @@
       </div>
     </section>
     <p id="pdf-tools-status" role="status"></p>
-    <p id="pdf-tools-setup" class="muted requires-backend" hidden>部分 PDF 服务未配置。</p>
+    <p id="pdf-tools-setup" class="muted" hidden>部分 PDF 服务未配置。</p>
   </dialog>
 </body>
 </html>

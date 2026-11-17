@@ -1,11 +1,12 @@
 import {readToolPdf} from "./reader-media.mjs";
+import {apiFetch} from "./reader-api.mjs";
 
 const $ = id => document.getElementById(id);
-const api = "./api/pdf-tools/";
+const api = "api/pdf-tools/";
 const languages = {en: "英语", zh: "简体中文", "zh-TW": "繁体中文", ja: "日语", ko: "韩语", de: "德语", fr: "法语", es: "西班牙语", ru: "俄语"};
 
 async function toolRequest(path, options) {
-  const result = await fetch(api + path, options);
+  const result = await apiFetch(api + path, options);
   if (!result.ok) {
     const data = await result.json().catch(() => ({}));
     throw new Error(data.message || "PDF 工具暂时不可用。");
@@ -13,7 +14,7 @@ async function toolRequest(path, options) {
   return result;
 }
 
-export function createPdfTools({toggleFonts, addFile, backendEnabled = true}) {
+export function createPdfTools({toggleFonts, addFile}) {
   const button = $("pdf-tools"), dialog = $("pdf-tools-dialog"), setup = $("pdf-tools-setup");
   const repair = $("pdf-repair"), translate = $("pdf-translate");
   const from = $("pdf-lang-from"), to = $("pdf-lang-to"), files = $("pdf-translation-files");
@@ -75,9 +76,13 @@ export function createPdfTools({toggleFonts, addFile, backendEnabled = true}) {
     if (!current) return;
     dialog.showModal();
     refresh();
-    if (!backendEnabled) return;
-    try { services = await (await toolRequest("status")).json(); }
-    catch { services = {}; }
+    try {
+      services = await (await toolRequest("status")).json();
+      setup.textContent = "部分 PDF 服务未配置。";
+    } catch (error) {
+      services = {};
+      setup.textContent = error.message || "PDF 服务未连接。";
+    }
     setup.hidden = Boolean(services.repair && services.translate);
     refresh();
   };

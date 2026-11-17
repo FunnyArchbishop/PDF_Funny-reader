@@ -13,13 +13,13 @@ const json = (payload, status = 200) => Response.json(payload, {
 });
 const failure = (status, error, message) => json({error, message}, status);
 
-async function ask(request, env, local) {
+async function ask(request, env, local, allowedOrigin = new URL(request.url).origin) {
   if (!local && !request.headers.get("oai-authenticated-user-id"))
     return failure(401, "sign_in", "请先登录课件网站。");
 
   if (request.method === "GET") return json({hasServerKey: Boolean(env.DEEPSEEK_API_KEY)});
   if (request.method !== "POST") return failure(405, "method", "不支持此请求。");
-  if (request.headers.get("origin") !== new URL(request.url).origin ||
+  if (request.headers.get("origin") !== allowedOrigin ||
       !request.headers.get("content-type")?.startsWith("application/json"))
     return failure(403, "origin", "请从课件网站提交问题。");
   const stream = request.body?.getReader();
@@ -95,4 +95,4 @@ export default {
 };
 
 // The local launcher binds to loopback and checks the Host before calling this handler.
-export const askFromLocalPreview = (request, env) => ask(request, env, true);
+export const askFromLocalPreview = (request, env, origin) => ask(request, env, true, origin);

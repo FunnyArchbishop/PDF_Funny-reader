@@ -50,7 +50,7 @@ function outputPdf(result) {
   return new Response(result.body, {headers: {...responseHeaders, "Content-Type": "application/pdf"}});
 }
 
-export async function handlePdfTools(request, env, local = false) {
+export async function handlePdfTools(request, env, local = false, allowedOrigin = new URL(request.url).origin) {
   if (!local && !request.headers.get("oai-authenticated-user-id")) return failure(401, "请先登录阅读器。");
   const url = new URL(request.url);
   const base = "/api/pdf-tools";
@@ -61,7 +61,7 @@ export async function handlePdfTools(request, env, local = false) {
 
   try {
     if (request.method === "POST" && (path === "/repair" || path === "/translation")) {
-      if (request.headers.get("origin") !== url.origin) return failure(403, "请从阅读器提交 PDF。");
+      if (request.headers.get("origin") !== allowedOrigin) return failure(403, "请从阅读器提交 PDF。");
       const destination = path === "/repair" ? repair : translate;
       if (!destination) return failure(503, "这个 PDF 服务尚未配置。");
       const input = await pdfInput(request);

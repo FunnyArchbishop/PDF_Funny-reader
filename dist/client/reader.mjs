@@ -4,9 +4,9 @@ import {makeContext, studyPages} from "./reader-review.mjs";
 import {createPdfZoom} from "./reader-zoom.mjs";
 import {createPdfTools} from "./reader-pdf-tools.mjs";
 import {bindCourseControls} from "./reader-courses.mjs";
+import {apiFetch, bindReaderConnection} from "./reader-api.mjs";
 
 const $ = id => document.getElementById(id);
-const backendEnabled = document.documentElement.dataset.readerEdition !== "pages";
 const decks = new Map();
 const activity = new Map();
 const progress = new Map();
@@ -21,7 +21,6 @@ let active, view, opening, rendering, selectedStudy, reviewBusy = false, importi
 let searchRun, searchMatches;
 const outlinePdfs = new Set();
 const pdfTools = createPdfTools({
-  backendEnabled,
   toggleFonts(id) {
     if (outlinePdfs.has(id)) outlinePdfs.delete(id);
     else outlinePdfs.add(id);
@@ -388,7 +387,7 @@ function chat() {
 }
 
 async function askAI(payload) {
-  const response = await fetch("./api/deepseek", {
+  const response = await apiFetch("api/deepseek", {
     method: "POST", headers: {"Content-Type": "application/json"},
     body: JSON.stringify({...payload, key: $("api-key").value.trim() || undefined})
   });
@@ -648,7 +647,7 @@ try {
   study.push(...results.sort((a, b) => b.created - a.created));
 } catch (error) { report("library-status", error); }
 library();
-if (!backendEnabled) $("review-activity-title").textContent = "我的标记与笔记";
+bindReaderConnection();
 bindCourseControls({isBusy: () => importing || reviewBusy || pendingChat.size > 0 || pdfTools.busy,
   flush: db.flush});
 window.addEventListener("hashchange", route);
