@@ -128,6 +128,7 @@ export function createPdfTools({toggleFonts, addFile}) {
   };
 
   return {
+    get busy() { return Array.from(states.values()).some(state => state.busy); },
     update(deck, file, outlineFonts) {
       if (current?.deck.id === deck?.id && current?.file === file && current?.outlineFonts === outlineFonts) return;
       if (dialog.open) dialog.close();

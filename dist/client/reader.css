@@ -27,6 +27,18 @@ small,.muted,.eyebrow{color:var(--muted);font-size:.83rem}
 .library-head,.chat,.work{padding:clamp(.85rem,2vw,1.45rem)}
 .library-head h1,.library-head p{margin-bottom:.7rem}
 .library-head h1 small{font-weight:400;margin-left:.3rem}
+.course-controls{display:grid;gap:.4rem;margin-bottom:.9rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+.course-controls label{font-weight:650}
+.course-controls select{width:100%;min-width:0}
+.course-actions{display:flex;flex-wrap:wrap;gap:.35rem}
+.course-actions button{flex:1;font-size:.84rem;white-space:nowrap;padding:.42rem .38rem}
+.course-controls p{margin:0}
+.course-controls p:empty,#course-dialog-status:empty{display:none}
+#course-dialog{width:min(26rem,94vw);border:1px solid var(--line);border-radius:12px;padding:1rem;background:var(--paper);color:var(--ink)}
+#course-dialog::backdrop{background:#151428aa}
+#course-dialog label{display:block;margin-top:.65rem}
+#course-dialog input{width:100%;margin:.35rem 0 .65rem}
+#course-dialog .toolbar{margin:.4rem 0 0;justify-content:flex-end}
 .file{display:block;text-align:center;position:relative;margin-bottom:.45rem}
 .file input{position:absolute;inset:0;width:100%;opacity:0;cursor:pointer}
 .file:focus-within{outline:3px solid #8778e1}

@@ -3,6 +3,7 @@ import {deckRecord, openMedia, readManifest, remoteUrl} from "./reader-media.mjs
 import {makeContext, studyPages} from "./reader-review.mjs";
 import {createPdfZoom} from "./reader-zoom.mjs";
 import {createPdfTools} from "./reader-pdf-tools.mjs";
+import {bindCourseControls} from "./reader-courses.mjs";
 
 const $ = id => document.getElementById(id);
 const decks = new Map();
@@ -650,5 +651,7 @@ try {
   study.push(...results.sort((a, b) => b.created - a.created));
 } catch (error) { report("library-status", error); }
 library();
+bindCourseControls({isBusy: () => importing || reviewBusy || pendingChat.size > 0 || pdfTools.busy,
+  flush: db.flush});
 window.addEventListener("hashchange", route);
 await route();

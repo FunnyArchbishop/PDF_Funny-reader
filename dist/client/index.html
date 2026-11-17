@@ -22,6 +22,15 @@
   <main class="layout">
     <aside class="library" aria-label="课件库">
       <div class="library-head">
+        <div class="course-controls">
+          <label for="course-picker">当前课表</label>
+          <select id="course-picker"><option>默认课表</option></select>
+          <div class="course-actions">
+            <button id="course-save" type="button">保存课表</button>
+            <button id="course-new" type="button">新建课表</button>
+          </div>
+          <p id="course-status" class="muted" role="status"></p>
+        </div>
         <h1>课件库 <small id="deck-count"></small></h1>
         <label class="primary file">导入课件<input type="file" id="files" multiple accept=".pptx,.pdf,.html,.htm,.json"></label>
         <label class="file secondary">导入文件夹<input type="file" id="folder" webkitdirectory multiple></label>
@@ -110,6 +119,18 @@
       </div>
     </section>
   </main>
+  <dialog id="course-dialog" aria-labelledby="course-dialog-title">
+    <h2 id="course-dialog-title">新建课表</h2>
+    <form id="course-form">
+      <label for="course-name">课表名称</label>
+      <input id="course-name" maxlength="60" placeholder="例如：计算机组成原理" required autofocus>
+      <p id="course-dialog-status" class="muted" role="status"></p>
+      <div class="toolbar">
+        <button id="course-cancel" type="button">取消</button>
+        <button class="primary" type="submit">创建并打开</button>
+      </div>
+    </form>
+  </dialog>
   <dialog id="pdf-detail" aria-labelledby="pdf-detail-title">
     <header>
       <h2 id="pdf-detail-title">局部放大</h2>
