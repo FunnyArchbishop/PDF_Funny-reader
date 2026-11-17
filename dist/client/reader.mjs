@@ -1,6 +1,7 @@
 import * as db from "./reader-store.mjs";
 import {deckRecord, openMedia, readManifest, remoteUrl} from "./reader-media.mjs";
 import {makeContext, studyPages} from "./reader-review.mjs";
+import {createPdfZoom} from "./reader-zoom.mjs";
 
 const $ = id => document.getElementById(id);
 const decks = new Map();
@@ -12,6 +13,7 @@ const pendingChat = new Set();
 const pageDrafts = new Map();
 const textCache = new Map();
 const preview = $("preview");
+const pdfZoom = createPdfZoom(preview);
 let active, view, opening, rendering, selectedStudy, reviewBusy = false, importing = false;
 let searchRun, searchMatches;
 
@@ -186,6 +188,7 @@ async function route() {
   }
   opening?.abort();
   rendering?.abort();
+  pdfZoom.update();
   searchRun?.abort();
   searchMatches = undefined;
   view?.close?.();
@@ -231,6 +234,7 @@ async function showPage(deck, requested) {
   rendering?.abort();
   rendering = new AbortController();
   const signal = rendering.signal;
+  pdfZoom.update();
   const id = keyOf(deck.id, page);
   active = {id: deck.id, page};
   const position = {id: deck.id, page, count: media.count, updated: Date.now()};
@@ -254,6 +258,7 @@ async function showPage(deck, requested) {
   try {
     await media.render(page - 1, signal);
     signal.throwIfAborted();
+    pdfZoom.update(media, page);
     $("preview-status").textContent = media.independent ? "HTML 演示使用其内置翻页。阅读索引显示已提取的文字。" : "";
   } catch (error) { if (!signal.aborted) report("preview-status", error); }
   try {

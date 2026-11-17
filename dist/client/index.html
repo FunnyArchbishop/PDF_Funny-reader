@@ -51,11 +51,14 @@
         <button id="prev" aria-label="上一页">←</button>
         <form id="page-form"><input id="page" aria-label="页码" type="number" min="1" value="1" required><span id="total"></span></form>
         <button id="next" aria-label="下一页">→</button>
-        <button id="full">放大</button>
+        <button id="full">全屏</button>
+        <button id="pdf-fit" aria-pressed="true" hidden>适合宽度</button>
+        <button id="pdf-zoom" aria-pressed="false" hidden>局部放大</button>
         <button id="mark" aria-pressed="false">加入复习</button>
         <button id="include" aria-pressed="false">选页问 AI</button>
       </div>
-      <div id="preview" class="preview" aria-label="幻灯片预览"></div>
+      <p id="pdf-zoom-help" class="muted zoom-help" hidden>拖框放大选区，或点击一个位置放大。Enter 放大视野中心，Esc 取消。</p>
+      <div id="preview" class="preview" aria-label="幻灯片预览" tabindex="0"></div>
       <p id="preview-status" class="muted" role="status"></p>
       <div class="page-tools">
         <label for="page-search">课件页索引</label>
@@ -106,5 +109,13 @@
       </div>
     </section>
   </main>
+  <dialog id="pdf-detail" aria-labelledby="pdf-detail-title">
+    <header>
+      <h2 id="pdf-detail-title">局部放大</h2>
+      <form method="dialog"><button autofocus>关闭</button></form>
+    </header>
+    <p id="pdf-detail-status" role="status" class="muted"></p>
+    <div id="pdf-detail-body"></div>
+  </dialog>
 </body>
 </html>

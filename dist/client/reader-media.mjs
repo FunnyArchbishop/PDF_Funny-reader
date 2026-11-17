@@ -128,7 +128,33 @@ export async function openMedia(deck, file, host, signal) {
         rendering = page.render({canvasContext: canvas.getContext("2d"), viewport});
         await rendering.promise;
         pageSignal.throwIfAborted();
-        host.replaceChildren(canvas);
+        const sheet = document.createElement("div");
+        sheet.className = "pdf-sheet";
+        sheet.append(canvas);
+        host.replaceChildren(sheet);
+      }, async renderRegion(index, rect, detailSignal) {
+        const page = await pdf.getPage(index + 1);
+        detailSignal.throwIfAborted();
+        const unit = page.getViewport({scale: 1});
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        const maxWidth = Math.min(window.innerWidth * .88, 1020);
+        const maxHeight = window.innerHeight * .74;
+        const scale = Math.min(maxWidth / (unit.width * rect.width),
+          maxHeight / (unit.height * rect.height), 16000 / (ratio * Math.max(unit.width, unit.height)));
+        const viewport = page.getViewport({scale: scale * ratio});
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.ceil(viewport.width * rect.width);
+        canvas.height = Math.ceil(viewport.height * rect.height);
+        canvas.style.width = (canvas.width / ratio) + "px";
+        const render = page.render({canvas, viewport,
+          transform: [1, 0, 0, 1, -viewport.width * rect.x, -viewport.height * rect.y]});
+        const cancel = () => render.cancel();
+        detailSignal.addEventListener("abort", cancel, {once: true});
+        try {
+          await render.promise;
+          detailSignal.throwIfAborted();
+          return canvas;
+        } finally { detailSignal.removeEventListener("abort", cancel); }
       }, close() { rendering?.cancel(); void task.destroy().catch(() => {}); }};
     } catch (error) { await task.destroy().catch(() => {}); throw error; }
   }
