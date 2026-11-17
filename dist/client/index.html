@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>课件阅读器 · StdOverwatch</title>
+  <script src="./reader-preferences.js"></script>
   <link rel="stylesheet" href="./reader.css">
   <script defer src="./vendor/marked.js"></script>
   <script defer src="./vendor/katex.js"></script>
@@ -18,7 +19,11 @@
       <button id="read-tab" aria-current="page">课件阅读</button>
       <button id="review-tab">复习工作台</button>
     </nav>
-    <a class="pages-only" href="https://stdoverwatch-ppt-reader.arisenthyme3.chatgpt.site/">完整版 ↗</a>
+    <div class="top-actions">
+      <a class="pages-only" href="https://stdoverwatch-ppt-reader.arisenthyme3.chatgpt.site/">完整版 ↗</a>
+      <button id="help-button" aria-haspopup="dialog">帮助</button>
+      <button id="settings-button" aria-haspopup="dialog"><span aria-hidden="true">⚙</span> 设置</button>
+    </div>
   </header>
   <main class="layout">
     <aside class="library" aria-label="课件库">
@@ -35,11 +40,6 @@
         <h1>课件库 <small id="deck-count"></small></h1>
         <label class="primary file">导入课件<input type="file" id="files" multiple accept=".pptx,.pdf,.html,.htm,.json"></label>
         <label class="file secondary">导入文件夹<input type="file" id="folder" webkitdirectory multiple></label>
-        <p class="muted">支持 PPTX、PDF、HTML 和课件清单。导入文件保存在当前浏览器。</p>
-        <details class="manifest-settings"><summary>课件清单设置</summary>
-          <label for="manifest-base">相对链接基址（可选）</label>
-          <input type="url" id="manifest-base" placeholder="https://example.com/course/">
-        </details>
         <input type="search" id="deck-search" placeholder="搜索课件名称" aria-label="搜索课件名称">
         <p id="library-status" role="status" class="muted"></p>
       </div>
@@ -48,8 +48,6 @@
     <section id="empty-panel" class="work empty" aria-label="开始阅读" hidden>
       <div>
         <h2>导入课件，开始阅读</h2>
-        <p class="requires-backend">打开 PPTX、PDF 或 HTML。在课件页旁提问、记笔记，之后可以按阅读记录生成复习材料。</p>
-        <p class="pages-only">打开 PPTX、PDF 或 HTML，按课表整理文件、标记重点并保存笔记。</p>
         <button id="empty-import" class="primary">选择课件</button>
       </div>
     </section>
@@ -69,7 +67,7 @@
         <button id="mark" aria-pressed="false">加入复习</button>
         <button id="include" class="requires-backend" aria-pressed="false">选页问 AI</button>
       </div>
-      <p id="pdf-zoom-help" class="muted zoom-help" hidden>拖框放大选区，或点击一个位置放大。Enter 放大视野中心，Esc 取消。</p>
+      <p id="pdf-zoom-help" class="muted zoom-help" hidden>点击或框选 · Esc 取消</p>
       <div id="preview" class="preview" aria-label="幻灯片预览" tabindex="0"></div>
       <p id="preview-status" class="muted" role="status"></p>
       <div class="page-tools">
@@ -80,7 +78,7 @@
       </div>
       <details class="text-panel"><summary>本页文字</summary><pre id="transcript"></pre></details>
       <label class="note-label" for="note">阅读笔记</label>
-      <textarea id="note" rows="3" maxlength="2000" placeholder="记录卡住的地方、易错点或自己的理解"></textarea>
+      <textarea id="note" rows="3" maxlength="2000"></textarea>
       <p id="note-status" class="muted" role="status"></p>
     </section>
     <aside id="chat-panel" class="chat requires-backend" aria-label="AI 助教" hidden>
@@ -89,20 +87,13 @@
       <div id="messages" class="messages"></div>
       <form id="chat-form">
         <label for="question">向 DeepSeek 提问</label>
-        <textarea id="question" rows="3" maxlength="2000" placeholder="例如：这几页的概念有什么联系？" required></textarea>
+        <textarea id="question" rows="3" maxlength="2000" required></textarea>
         <button class="primary">发送</button>
       </form>
       <p id="chat-status" role="status" class="muted"></p>
-      <details id="ai-settings"><summary>AI 设置</summary>
-        <label for="api-key">DeepSeek API Key</label>
-        <input id="api-key" type="password" autocomplete="off" maxlength="185" placeholder="优先使用站点配置">
-        <p class="muted">密钥仅在本次打开页面时使用。提问会发送所选页的文字、笔记和近期对话。</p>
-      </details>
     </aside>
     <section id="review-panel" class="work review" aria-label="复习工作台" hidden>
-      <header class="work-head"><div><p class="eyebrow">学习记录</p><h2>复习工作台</h2></div><button id="export" class="requires-backend" disabled>导出 Markdown</button></header>
-      <p class="requires-backend">把课件内容、标记页、笔记和提问汇总成一份复习材料。</p>
-      <p class="pages-only">回看这个课表标记过的页面和笔记。AI 生成大纲、讲义和自测题请使用顶部的「完整版」。</p>
+      <header class="work-head"><h2>复习工作台</h2><button id="export" class="requires-backend" disabled>导出 Markdown</button></header>
       <form id="review-form" class="requires-backend">
         <div class="form-row">
           <label>课件范围<select id="scope"><option value="deck">当前课件</option><option value="activity">有阅读记录的课件</option><option value="picked">选择课件</option></select></label>
@@ -110,8 +101,7 @@
         </div>
         <div id="review-picker" hidden><label for="review-decks">选择课件（可多选）</label><select id="review-decks" multiple size="5"></select></div>
         <label for="goal">复习要求</label>
-        <textarea id="goal" rows="3" maxlength="700" placeholder="例如：准备期末，优先讲寻址方式和流水线，给出两道计算题"></textarea>
-        <p class="muted">生成时优先纳入标记页、笔记和近期提问，并选取课件中的代表页。</p>
+        <textarea id="goal" rows="3" maxlength="700"></textarea>
         <button class="primary">生成复习材料</button>
         <button type="button" id="expand-outline" hidden>按已保存大纲展开</button>
         <p id="review-status" role="status" class="muted"></p>
@@ -122,6 +112,56 @@
       </div>
     </section>
   </main>
+  <dialog id="settings-dialog" class="menu-dialog" aria-labelledby="settings-title">
+    <header><h2 id="settings-title">设置</h2><form method="dialog"><button>关闭</button></form></header>
+    <section>
+      <h3>外观</h3>
+      <div class="settings-row">
+        <label for="theme-mode">显示模式</label>
+        <select id="theme-mode"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select>
+      </div>
+      <div class="settings-row">
+        <label for="theme-accent">主题配色</label>
+        <select id="theme-accent"><option value="violet">紫罗兰</option><option value="blue">海蓝</option><option value="green">松绿</option><option value="amber">琥珀</option></select>
+      </div>
+    </section>
+    <section>
+      <h3>导入</h3>
+      <label for="manifest-base">课件清单基址</label>
+      <input type="url" id="manifest-base" placeholder="https://example.com/course/">
+    </section>
+    <section id="setting-pdf" hidden>
+      <h3>当前 PDF</h3>
+      <button id="pdf-font-mode" aria-pressed="false">字体兼容模式</button>
+    </section>
+    <section class="requires-backend">
+      <h3>AI</h3>
+      <label for="api-key">DeepSeek API Key</label>
+      <input id="api-key" type="password" autocomplete="off" maxlength="185">
+    </section>
+  </dialog>
+  <dialog id="help-dialog" class="menu-dialog" aria-labelledby="help-title">
+    <header><h2 id="help-title">帮助</h2><form method="dialog"><button>关闭</button></form></header>
+    <section>
+      <h3>课表和导入</h3>
+      <p>按课程新建课表，再导入 PPTX、PDF、HTML 或 Paper-Master 清单。旧版 PPT 可以先另存为 PPTX 或 PDF。清单里的相对链接可以在设置里填写基址。</p>
+      <p>文件、进度和笔记按课表保存在当前浏览器。GitHub 网页版和完整版的课件库各自保存。</p>
+    </section>
+    <section>
+      <h3>阅读和复习</h3>
+      <p>PDF 可在适宽和整页之间切换。使用局部放大后，可点击或拖框选区，Enter 放大视野中心，Esc 取消。缺少公式或字形时，可在设置里试用字体兼容模式，也可从 PDF 工具打开原件。</p>
+      <p>HTML 演示用其内置控件翻页。点「加入复习」或记下笔记后，可从复习工作台跳回原页。</p>
+    </section>
+    <section class="pages-only">
+      <h3>完整版</h3>
+      <p>AI 问答、生成复习材料、PDF 修复和翻译需在 <a href="https://stdoverwatch-ppt-reader.arisenthyme3.chatgpt.site/">完整版</a>连接相应服务。</p>
+    </section>
+    <section class="requires-backend">
+      <h3>AI 和 PDF 服务</h3>
+      <p>可按页提问，或选取多页一起提问。生成复习材料时会优先参考标记、笔记和近期提问。手动填入的 DeepSeek Key 只在当前页面有效。</p>
+      <p>修复和翻译会把当前 PDF 发给相应服务。未配置时可参考 <a href="https://docs.stirlingpdf.com/Developers/API/" target="_blank" rel="noopener noreferrer">Stirling‑PDF</a> 和 <a href="https://github.com/PDFMathTranslate/PDFMathTranslate/blob/main/docs/APIS.md" target="_blank" rel="noopener noreferrer">PDFMathTranslate</a> 的接入说明。</p>
+    </section>
+  </dialog>
   <dialog id="course-dialog" aria-labelledby="course-dialog-title">
     <h2 id="course-dialog-title">新建课表</h2>
     <form id="course-form">
@@ -146,12 +186,9 @@
     <header><h2 id="pdf-tools-title">PDF 工具</h2><form method="dialog"><button autofocus>关闭</button></form></header>
     <p id="pdf-tools-source" class="muted"></p>
     <section>
-      <h3>公式或符号不完整</h3>
       <div class="toolbar">
-        <button id="pdf-font-mode" aria-pressed="false">字体兼容模式</button>
         <a id="pdf-native" target="_blank" rel="noopener noreferrer">用浏览器打开原 PDF ↗</a>
       </div>
-      <p class="muted">字体兼容模式会重新绘制字形。</p>
       <button id="pdf-repair" class="requires-backend" disabled>用 Stirling‑PDF 修复副本</button>
     </section>
     <section class="requires-backend">
@@ -160,7 +197,6 @@
         <label>原文语言<select id="pdf-lang-from"></select></label>
         <label>译文语言<select id="pdf-lang-to"></select></label>
       </div>
-      <p class="muted">修复或翻译会将当前 PDF 发给对应服务，翻译服务也可能把文字发给所配置的翻译引擎。</p>
       <button id="pdf-translate" class="primary" disabled>开始翻译</button>
       <div id="pdf-translation-files" class="toolbar" hidden>
         <button type="button" data-translation="dual">打开双语版</button>
@@ -168,8 +204,7 @@
       </div>
     </section>
     <p id="pdf-tools-status" role="status"></p>
-    <p class="pages-only muted">需要修复或翻译 PDF 时，请打开 <a href="https://stdoverwatch-ppt-reader.arisenthyme3.chatgpt.site/">完整版</a>，并连接对应服务。</p>
-    <p id="pdf-tools-setup" class="muted requires-backend" hidden>灰色按钮需要配置对应服务。自托管时可按项目说明连接 <a href="https://docs.stirlingpdf.com/Developers/API/" target="_blank" rel="noopener noreferrer">Stirling‑PDF</a> 或 <a href="https://github.com/PDFMathTranslate/PDFMathTranslate/blob/main/docs/APIS.md" target="_blank" rel="noopener noreferrer">PDFMathTranslate</a>。</p>
+    <p id="pdf-tools-setup" class="muted requires-backend" hidden>部分 PDF 服务未配置。</p>
   </dialog>
 </body>
 </html>

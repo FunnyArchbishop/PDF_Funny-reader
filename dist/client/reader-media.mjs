@@ -97,7 +97,7 @@ export async function openMedia(deck, file, host, signal, {outlineFonts = false}
     if (file) {
       frame.srcdoc = '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'unsafe-inline\'; style-src \'unsafe-inline\'; img-src data: blob:; font-src data:; media-src data: blob:; form-action \'none\'; base-uri \'none\'">' + raw;
     } else frame.src = deck.url;
-    return {count: pages.length, text: index => pages[index], independent: true,
+    return {count: pages.length, text: index => pages[index],
       render() { if (!frame.isConnected) host.replaceChildren(frame); }};
   }
   const bytes = await content(deck, file, signal);

@@ -123,7 +123,7 @@ function library() {
     }
   }
   list.replaceChildren(fragment);
-  if (!groupMap.size) list.append(node("p", "没有匹配的课件。", "muted"));
+  if (filter && !groupMap.size) list.append(node("p", "没有匹配的课件。", "muted"));
   $("deck-count").textContent = decks.size + " 份";
 }
 
@@ -175,7 +175,6 @@ function showTab(review, noDeck = false) {
   $("reader-panel").hidden = $("chat-panel").hidden = review || noDeck;
   $("empty-panel").hidden = review || !noDeck;
   $("review-panel").hidden = !review;
-  $("ai-settings").hidden = false;
   $("read-tab").removeAttribute("aria-current");
   $("review-tab").removeAttribute("aria-current");
   $(review ? "review-tab" : "read-tab").setAttribute("aria-current", "page");
@@ -282,13 +281,13 @@ async function showPage(deck, requested) {
     await media.render(page - 1, signal);
     signal.throwIfAborted();
     pdfZoom.update(media, page);
-    $("preview-status").textContent = media.independent ? "HTML 演示使用其内置翻页。阅读索引显示已提取的文字。" : "";
+    $("preview-status").textContent = "";
   } catch (error) { if (!signal.aborted) report("preview-status", error); }
   try {
     signal.throwIfAborted();
     const data = await pageData(deck, page);
     signal.throwIfAborted();
-    $("transcript").textContent = data?.text || "本页没有可提取的文字。可在笔记中补充图示信息。";
+    $("transcript").textContent = data?.text || "本页没有可提取的文字。";
     pageList();
   } catch (error) { if (!signal.aborted) $("transcript").textContent = error.message; }
 }
@@ -360,7 +359,7 @@ function chat() {
   const {id: deckId, page} = active;
   const id = keyOf(deckId, page);
   const deck = decks.get(deckId);
-  $("chat-context").textContent = picked.size ? "已选 " + picked.size + " 页 · 对话记录保存到当前页"
+  $("chat-context").textContent = picked.size ? "已选 " + picked.size + " 页"
     : deck.title + " · 第 " + page + " 页";
   const chips = Array.from(picked, ([key, item]) => {
     const chip = node("button", item.title + " · " + item.page + " ×");
@@ -382,7 +381,6 @@ function chat() {
     renderMarkdown(turn.answer, body, turn.sources);
     messages.append(question, answer);
   }
-  if (!messages.childElementCount) messages.append(node("p", "可以从当前页开始，也可以跨课件勾选多页再提问。", "muted"));
   messages.scrollTop = messages.scrollHeight;
   $("question").value = pageDrafts.get(id) || "";
   $("chat-form").querySelector("button").disabled = !view || pendingChat.has(id);
@@ -396,7 +394,7 @@ async function askAI(payload) {
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok || typeof result.answer !== "string") {
-    if (result.error === "key_required") $("ai-settings").open = true;
+    if (result.error === "key_required") throw new Error("请在「设置」中填写 DeepSeek API Key。");
     throw new Error(result.message || "AI 服务不可用，请检查站点连接。");
   }
   return result.answer;
@@ -481,9 +479,7 @@ function showReview() {
     if (record.turns.length) item.append(node("p", record.turns.at(-1).question, "muted"));
     activityHost.append(item);
   }
-  if (!records.length) activityHost.append(node("p", backendEnabled
-    ? "标记课件页、记录笔记或向 AI 提问后，会在这里看到记录。"
-    : "加入复习的课件页和阅读笔记会显示在这里。", "muted"));
+  if (!records.length) activityHost.append(node("p", "暂无复习记录。", "muted"));
   const picker = $("review-decks");
   const selected = new Set(Array.from(picker.selectedOptions, option => option.value));
   picker.replaceChildren(...Array.from(decks.values(), deck => {
@@ -512,7 +508,7 @@ function showStudy(result) {
   const output = $("study-output");
   output.replaceChildren();
   showSources($("study-sources"), result?.sources);
-  if (!result) { output.append(node("p", "生成的大纲、讲义和自测题会保存在这里。", "muted")); return; }
+  if (!result) { output.append(node("p", "暂无生成结果。", "muted")); return; }
   if (result.goal) output.append(node("p", "复习要求：" + result.goal, "muted"));
   const body = node("div", "", "study-text slide-answer-body");
   const split = result.mode === "quiz" ? result.answer.match(/^#{1,6}\s*答案与解析\s*$/m) : null;
@@ -561,9 +557,6 @@ async function generate(outline) {
     $("review-status").textContent = "已保存。使用了 " + packet.sources.length + " 页资料。";
   } catch (error) {
     report("review-status", error);
-    if ($("ai-settings").open && $("chat-panel").hidden) {
-      $("review-status").textContent += " 可在课件阅读页的 AI 设置中填写密钥。";
-    }
   } finally {
     reviewBusy = false;
     $("review-form").querySelector("button.primary").disabled = $("expand-outline").disabled = false;

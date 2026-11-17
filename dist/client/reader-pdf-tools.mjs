@@ -82,7 +82,8 @@ export function createPdfTools({toggleFonts, addFile, backendEnabled = true}) {
     refresh();
   };
   $("pdf-font-mode").onclick = () => {
-    dialog.close();
+    if (!current) return;
+    $("settings-dialog").close();
     toggleFonts(current.deck.id);
   };
   repair.onclick = () => void run(async context => {
