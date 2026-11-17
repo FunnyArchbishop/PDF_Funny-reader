@@ -375,7 +375,12 @@ async function askAI(payload) {
 }
 
 async function fillSources(items) {
-  const grouped = Map.groupBy(items, item => item.deck.id);
+  const grouped = new Map();
+  for (const item of items) {
+    const id = item.deck.id;
+    if (!grouped.has(id)) grouped.set(id, []);
+    grouped.get(id).push(item);
+  }
   for (const group of grouped.values()) {
     const {deck} = group[0];
     let temporary;
