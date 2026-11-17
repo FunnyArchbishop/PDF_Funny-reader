@@ -165,20 +165,23 @@ export async function openMedia(deck, file, host, signal, {outlineFonts = false}
   }
   const {PptxViewer, RECOMMENDED_ZIP_LIMITS, buildTextIndex, parseZipLazyMedia, buildPresentation} =
     await import(new URL("pptx/renderer.mjs", vendor));
-  const viewer = host && await PptxViewer.open(bytes, host, {
-    zipLimits: RECOMMENDED_ZIP_LIMITS, externalMedia: "block", renderMode: "slide",
-    width: Math.max(280, host.getBoundingClientRect().width - 16), lazySlides: true, lazyMedia: true,
-    pdfjs: false, signal
+  const files = await parseZipLazyMedia(bytes, RECOMMENDED_ZIP_LIMITS);
+  const prepareWmfPreviews = host ? (await import("./reader-wmf.mjs")).prepareWmfPreviews : null;
+  signal.throwIfAborted();
+  const disposePreviews = prepareWmfPreviews?.(files);
+  const model = buildPresentation(files, {lazySlides: true});
+  const viewer = host && new PptxViewer(host, {
+    externalMedia: "block", width: Math.max(280, host.getBoundingClientRect().width - 16), pdfjs: false
   });
-  const model = viewer?.presentationData || buildPresentation(await parseZipLazyMedia(bytes, RECOMMENDED_ZIP_LIMITS), {lazySlides: true});
+  viewer?.load(model);
   let index;
   return {count: model.slides.length, render: async page => {
     if (index === page) return;
-    await viewer.goToSlide(page);
+    await viewer.renderSlide(page);
     index = page;
   }, text(page) {
     const matches = buildTextIndex({...model, slides: [model.slides[page]]});
     const lines = matches.map(hit => hit.text);
     return {title: lines[0]?.slice(0, 90) || "", text: lines.join("\n")};
-  }, close() { viewer?.destroy(); }};
+  }, close() { disposePreviews?.(); viewer?.destroy(); }};
 }

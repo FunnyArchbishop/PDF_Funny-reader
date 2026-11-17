@@ -20,7 +20,7 @@ node serve.mjs
 - 文件和学习记录存储在当前浏览器的当前站点。独立版的本地地址和线上地址分别有自己的课件库。
 - 右上角的「设置」可以更改主题、填写课件清单基址和本次会话的 DeepSeek API Key。也可在启动后端前设置环境变量 `DEEPSEEK_API_KEY`。每次请求只提交所用的课件摘录和相关学习记录。
 
-浏览器渲染使用 [pptx-renderer](https://github.com/aiden0z/pptx-renderer) 和 [PDF.js](https://github.com/mozilla/pdf.js)。PDF.js 使用 6.5.438 的 `legacy/build`，更新时请一起替换主模块和 worker。相关许可证随 `dist/client/vendor` 分发。
+浏览器渲染使用 [pptx-renderer](https://github.com/aiden0z/pptx-renderer) 和 [PDF.js](https://github.com/mozilla/pdf.js)。PPTX 内嵌的 WMF 图片通过 [emf-converter](https://github.com/ChristopherVR/emf-converter) 4.29.0 在浏览器后台转换。PDF.js 使用 6.5.438 的 `legacy/build`，更新时请一起替换主模块和 worker。相关许可证随 `dist/client/vendor` 分发。
 
 ## PDF 公式与翻译
 
