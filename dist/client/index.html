@@ -6,6 +6,7 @@
   <title>课件阅读器 · StdOverwatch</title>
   <script src="./reader-preferences.js"></script>
   <link rel="stylesheet" href="./reader.css">
+  <link rel="stylesheet" href="./reader-themes.css">
   <script defer src="./vendor/marked.js"></script>
   <script defer src="./vendor/katex.js"></script>
   <script defer src="./vendor/purify.js"></script>
@@ -119,13 +120,31 @@
     <header><h2 id="settings-title">设置</h2><form method="dialog"><button>关闭</button></form></header>
     <section>
       <h3>外观</h3>
+      <fieldset class="style-picker"><legend>视觉风格</legend>
+        <label><input type="radio" name="reader-style" value="studio"><i class="swatch studio"></i>工作室</label>
+        <label><input type="radio" name="reader-style" value="retro"><i class="swatch retro"></i>复古书房</label>
+        <label><input type="radio" name="reader-style" value="cyber"><i class="swatch cyber"></i>赛博终端</label>
+        <label><input type="radio" name="reader-style" value="coast"><i class="swatch coast"></i>海岸</label>
+        <label><input type="radio" name="reader-style" value="botanical"><i class="swatch botanical"></i>植物手记</label>
+        <label><input type="radio" name="reader-style" value="bauhaus"><i class="swatch bauhaus"></i>包豪斯</label>
+        <label><input type="radio" name="reader-style" value="ink"><i class="swatch ink"></i>水墨</label>
+        <label><input type="radio" name="reader-style" value="custom"><i class="swatch custom"></i>自定义</label>
+      </fieldset>
       <div class="settings-row">
         <label for="theme-mode">显示模式</label>
         <select id="theme-mode"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select>
       </div>
       <div class="settings-row">
         <label for="theme-accent">主题配色</label>
-        <select id="theme-accent"><option value="violet">紫罗兰</option><option value="blue">海蓝</option><option value="green">松绿</option><option value="amber">琥珀</option></select>
+        <select id="theme-accent"><option value="auto">随风格</option><option value="violet">紫罗兰</option><option value="blue">海蓝</option><option value="green">松绿</option><option value="amber">琥珀</option></select>
+      </div>
+      <div id="custom-style" hidden>
+        <div class="settings-row"><label for="custom-ink">强调色</label><input id="custom-ink" type="color"></div>
+        <div class="settings-row"><label for="custom-paper">背景色调</label><input id="custom-paper" type="color"></div>
+        <label for="style-image">工作区背景图</label>
+        <input id="style-image" type="file" accept="image/png,image/jpeg,image/webp">
+        <button type="button" id="remove-style-image" hidden>移除背景图</button>
+        <p id="style-status" class="muted" role="status"></p>
       </div>
     </section>
     <section>

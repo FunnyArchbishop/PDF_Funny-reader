@@ -1,0 +1,84 @@
+/* Art direction stays outside the document preview. */
+:root[data-style="retro"] {
+  --style-tone:#dbc391; --style-ink:#985421; --bar:#433126; --style-art:url("./themes/retro.svg");
+}
+.swatch.retro {background-image:url("./themes/retro.svg")}
+:root[data-style="cyber"] {
+  --style-tone:#95c7df; --style-ink:#175980; --bar:#111330; --style-art:url("./themes/cyber.svg");
+}
+.swatch.cyber {background-image:url("./themes/cyber.svg")}
+:root[data-style="coast"] {
+  --style-tone:#b7ded6; --style-ink:#227078; --bar:#164750; --style-art:url("./themes/coast.svg");
+}
+.swatch.coast {background-image:url("./themes/coast.svg")}
+:root[data-style="botanical"] {
+  --style-tone:#c2cfac; --style-ink:#4c6943; --bar:#334436; --style-art:url("./themes/botanical.svg");
+}
+.swatch.botanical {background-image:url("./themes/botanical.svg")}
+:root[data-style="bauhaus"] {
+  --style-tone:#e1c895; --style-ink:#ad4134; --bar:#282a31; --style-art:url("./themes/bauhaus.svg");
+}
+.swatch.bauhaus {background-image:url("./themes/bauhaus.svg")}
+:root[data-style="ink"] {
+  --style-tone:#bdc9bf; --style-ink:#4c6359; --bar:#293936; --style-art:url("./themes/ink.svg");
+}
+.swatch.ink {background-image:url("./themes/ink.svg")}
+:root[data-style="custom"] {--style-tone:var(--user-paper); --style-ink:color-mix(in srgb,var(--user-ink) 72%,#181824)}
+:root:not([data-style="studio"])[data-style] {
+  --canvas:color-mix(in srgb,var(--style-tone) 32%,#fff);
+  --paper:color-mix(in srgb,var(--style-tone) 9%,#fff);
+  --line:color-mix(in srgb,var(--style-tone) 70%,#a2a6ad);
+  --frame:color-mix(in srgb,var(--style-tone) 55%,#c2c6cb);
+}
+:root[data-theme="dark"]:not([data-style="studio"])[data-style] {
+  --canvas:color-mix(in srgb,var(--style-tone) 9%,#0e1018);
+  --paper:color-mix(in srgb,var(--style-tone) 13%,#14171d);
+  --line:color-mix(in srgb,var(--style-tone) 30%,#222832);
+  --frame:color-mix(in srgb,var(--style-tone) 6%,#0a0b10);
+}
+:root[data-accent="auto"]:not([data-style="studio"]),:root[data-style="custom"] {
+  --accent:var(--style-ink); --accent-hover:color-mix(in srgb,var(--accent) 80%,black);
+  --accent-light:color-mix(in srgb,var(--style-ink) 30%,white);
+}
+:root[data-style="custom"] {--style-ink:color-mix(in srgb,var(--user-ink) 42%,#10101a)}
+:root[data-style="custom"] .folio-art i:nth-child(3)::before {
+  background:var(--user-image) center/cover,linear-gradient(135deg,var(--user-paper),var(--user-ink));
+}
+.style-picker {display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.42rem; border:0; margin:.65rem 0 1rem; padding:0}
+.style-picker legend {font-size:.84rem; margin-bottom:.4rem}
+.style-picker label {position:relative; display:grid; gap:.24rem; padding:.25rem .25rem .35rem;
+  background:var(--paper); border:1px solid var(--line); border-radius:8px; text-align:center; font-size:.8rem; cursor:pointer}
+.style-picker label:has(:checked) {box-shadow:0 0 0 2px var(--accent-text); font-weight:700}
+.style-picker label:has(:focus-visible) {outline:3px solid var(--accent-text); outline-offset:3px}
+.style-picker input {position:absolute;width:1px;height:1px;opacity:0}
+.swatch {display:block; height:2.1rem; border-radius:5px; background-size:cover; background-position:center}
+.swatch.studio {background:linear-gradient(145deg,#e8e6f4 0 36%,#a69bd7 36% 63%,#5144a7 63%)}
+.swatch.custom {background-image:var(--user-image),linear-gradient(125deg,var(--user-paper),var(--user-ink))}
+#custom-style {display:grid;gap:.45rem;margin-top:.6rem}
+#custom-style input[type="color"] {width:3.2rem;height:2rem;padding:.1rem;cursor:pointer;margin:0}
+#remove-style-image {justify-self:start}
+:root:not([data-style="studio"]):not([data-style="custom"]) .folio-art i:nth-child(3)::before {background:var(--style-art) center/cover}
+:root:not([data-style="studio"]):not([data-style="custom"]) .library-head::before {
+  content:""; display:block; height:3.5rem; border-radius:8px; margin-bottom:1rem;
+  background:var(--style-art) center/cover;
+}
+:root:is([data-style="retro"],[data-style="ink"],[data-style="botanical"]) :is(.brand,.work-head h2,.empty h2,.library-head h1,.chat-head h2) {
+  font-family:Georgia,"Songti SC","SimSun",serif;
+}
+:root[data-style="retro"] .empty {background-image:repeating-linear-gradient(0deg,transparent 0 23px,var(--line) 24px);background-size:auto}
+:root[data-style="cyber"] .brand,:root[data-style="cyber"] .eyebrow {font-family:Consolas,monospace}
+:root[data-style="cyber"] .empty {background-image:linear-gradient(90deg,var(--line) 1px,transparent 1px),linear-gradient(var(--line) 1px,transparent 1px);background-size:28px 28px}
+:root[data-style="cyber"] .top {box-shadow:inset 0 -2px #4aefea}
+:root:not([data-style="studio"]):not([data-style="custom"]) .work-head {
+  border-bottom:1px solid var(--line); padding-bottom:.75rem;
+}
+:root[data-style="coast"] .empty {background:linear-gradient(160deg,var(--paper),var(--canvas) 58%,var(--frame))}
+:root[data-style="botanical"] .top {border-bottom:3px solid #93a17a}
+:root[data-style="bauhaus"] :is(.file,.review-card,.primary,.top nav,.brand-mark) {border-radius:2px}
+:root[data-style="bauhaus"] .empty {background:linear-gradient(118deg,var(--paper) 64%,var(--canvas) 64%)}
+:root[data-style="ink"] .empty {background:radial-gradient(ellipse at bottom right,var(--frame),var(--canvas) 58%,var(--paper))}
+:root[data-style="custom"] :is(.work,.empty) {
+  background-image:linear-gradient(color-mix(in srgb,var(--canvas) 80%,transparent),color-mix(in srgb,var(--canvas) 88%,transparent)),var(--user-image);
+  background-position:center; background-size:cover;
+}
+@media(max-width:400px) {.style-picker {grid-template-columns:repeat(3,minmax(0,1fr))}}
