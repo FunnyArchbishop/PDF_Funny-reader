@@ -24,6 +24,8 @@ node serve.mjs
 
 旧版 PPT 使用 [Web-PPT](https://github.com/unStone/web-ppt) 的 `@web-ppt/core@0.8.0` 和 `fflate@0.8.2`。`dist/client/vendor/legacy-ppt/core.mjs` 是这两个依赖在浏览器端的 ESM bundle，入口从 `@web-ppt/core` 重新导出 `parse`、`PasswordRequiredError`、`slideText` 和 `slideToSvgFile`，用 esbuild 以 `--bundle --platform=browser --format=esm --minify --legal-comments=eof` 构建。
 
+旧版 PPT 解析器有一处本地修正。更新 Web-PPT 时需保留字符格式掩码 0x00800000 对应的 symbolFontIdx，并在构造文本 run 时按当前或继承的符号字体调用 symbol.mjs 的 decodeSymbolText。映射来源和许可随 ADOBE-SYMBOL.txt 分发。
+
 ## PDF 公式与翻译
 
 公式或符号缺失时，打开「设置」中的「字体兼容模式」，或从「PDF 工具」打开原件对照。原件没有的内容需要重新取得原始文档或从源稿导出。
