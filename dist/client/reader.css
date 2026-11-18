@@ -74,6 +74,7 @@ html[data-reader-edition="pages"] .pages-only{display:block}
 button[aria-pressed="true"]{background:var(--soft);border-color:var(--accent-border);color:var(--accent-text);font-weight:650}
 .preview{background:var(--frame);min-height:170px;padding:.5rem;display:grid;place-items:center;border-radius:12px;overflow:auto}
 .preview img,.preview canvas{display:block;max-width:100%;max-height:66vh;width:auto;height:auto}
+.preview img.legacy-ppt-slide{width:100%;object-fit:contain}
 .preview iframe{display:block;width:100%;height:min(65vh,620px);background:white;border:0}
 .preview:fullscreen{border-radius:0}
 .preview:fullscreen :is(img,canvas,iframe){max-height:96vh}

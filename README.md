@@ -14,13 +14,15 @@ node serve.mjs
 
 界面和 API 分开实现。桌面外壳可直接调用 `startReaderHost({port: 0, webOrigins: []})`，从返回的 `origin` 加载同一套界面，关闭时调用返回的 `close()`。本地服务只监听回环地址，桌面模式无需允许跨站访问。GitHub 网页版与本地应用是不同浏览器来源，分别保存课件库。
 
-- 批量导入 PPTX、PDF、HTML 或课件文件夹，并支持 Paper-Master 的 `slides-manifest.json`。旧版 `.ppt` 请先另存为 PPTX 或 PDF。
+- 批量导入 PowerPoint 97–2003（PPT）、PPTX、PDF、HTML 或课件文件夹，并支持 Paper-Master 的 `slides-manifest.json`。旧版 PPT 以静态幻灯片预览，支持翻页、提取文字和复习。密码保护的 PPT 需先解密。
 - 用「新建课表」为每门课建立独立课件库，用「保存课表」设置名称。课件、阅读进度、问答、笔记和复习材料按课表自动保存，已有内容在「默认课表」中。
 - 在课件页旁选页提问、记笔记和标记重点。在复习工作台指定范围和复习要求，生成可回到原页的大纲、讲义及自测题，或导出 Markdown。
 - 文件和学习记录存储在当前浏览器的当前站点。独立版的本地地址和线上地址分别有自己的课件库。
 - 右上角的「设置」可以更改主题、填写课件清单基址和本次会话的 DeepSeek API Key。也可在启动后端前设置环境变量 `DEEPSEEK_API_KEY`。每次请求只提交所用的课件摘录和相关学习记录。
 
 浏览器渲染使用 [pptx-renderer](https://github.com/aiden0z/pptx-renderer) 和 [PDF.js](https://github.com/mozilla/pdf.js)。PPTX 内嵌的 WMF 图片通过 [emf-converter](https://github.com/ChristopherVR/emf-converter) 4.29.0 在浏览器后台转换。PDF.js 使用 6.5.438 的 `legacy/build`，更新时请一起替换主模块和 worker。相关许可证随 `dist/client/vendor` 分发。
+
+旧版 PPT 使用 [Web-PPT](https://github.com/unStone/web-ppt) 的 `@web-ppt/core@0.8.0` 和 `fflate@0.8.2`。`dist/client/vendor/legacy-ppt/core.mjs` 是这两个依赖在浏览器端的 ESM bundle，入口从 `@web-ppt/core` 重新导出 `parse`、`PasswordRequiredError`、`slideText` 和 `slideToSvgFile`，用 esbuild 以 `--bundle --platform=browser --format=esm --minify --legal-comments=eof` 构建。
 
 ## PDF 公式与翻译
 

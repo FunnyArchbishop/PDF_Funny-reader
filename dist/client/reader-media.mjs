@@ -1,7 +1,7 @@
 const vendor = new URL("./vendor/", import.meta.url);
 const pdfBase = new URL("pdfjs/", vendor);
 const maxBytes = 100 * 1024 * 1024;
-const kindOf = name => name.match(/\.(pptx|pdf|html?)$/i)?.[1].toLowerCase().replace(/^htm$/, "html");
+export const kindOf = name => name.match(/\.(pptx?|pdf|html?)$/i)?.[1].toLowerCase().replace(/^htm$/, "html");
 const pathKey = path => path.replaceAll("\\", "/").replace(/^\.\//, "");
 
 export function remoteUrl(value, base = location.href) {
@@ -102,6 +102,10 @@ export async function openMedia(deck, file, host, signal, {outlineFonts = false}
   }
   const bytes = await content(deck, file, signal);
   signal.throwIfAborted();
+  if (deck.kind === "ppt") {
+    const {openLegacyPpt} = await import("./reader-legacy-ppt.mjs");
+    return openLegacyPpt(bytes, host, signal);
+  }
   if (deck.kind === "pdf") {
     const pdfjs = await import(new URL("pdf.min.mjs", pdfBase));
     pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdf.worker.min.mjs", pdfBase).href;

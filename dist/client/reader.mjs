@@ -1,5 +1,5 @@
 import * as db from "./reader-store.mjs";
-import {deckRecord, openMedia, readManifest, remoteUrl} from "./reader-media.mjs";
+import {deckRecord, kindOf, openMedia, readManifest, remoteUrl} from "./reader-media.mjs";
 import {makeContext, studyPages} from "./reader-review.mjs";
 import {createPdfZoom} from "./reader-zoom.mjs";
 import {createPdfTools} from "./reader-pdf-tools.mjs";
@@ -132,7 +132,7 @@ async function importFiles(input) {
   const files = Array.from(input.files);
   input.value = "";
   const manifests = files.filter(file => /\.json$/i.test(file.name));
-  const supported = files.filter(file => /\.(pptx|pdf|html?)$/i.test(file.name));
+  const supported = files.filter(file => kindOf(file.name));
   const byPath = new Map(supported.map(file => [file.webkitRelativePath || file.name, file]));
   const imports = new Map(supported.map(file => [file, {file}]));
   const errors = [];
@@ -158,8 +158,6 @@ async function importFiles(input) {
         added++;
       } catch (error) { errors.push((entry.file?.name || entry.meta?.title) + "：" + error.message); }
     }
-    const legacy = files.filter(file => /\.ppt$/i.test(file.name)).length;
-    if (legacy) errors.push(legacy + " 个旧版 .ppt 请先另存为 .pptx 或 PDF。");
     $("library-status").textContent = [added ? "已导入 " + added + " 份。" : "没有导入课件。", ...errors.slice(0, 4)].join(" ");
     library();
     if (first) navigate(first, progress.get(first)?.page || 1);
