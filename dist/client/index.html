@@ -14,7 +14,7 @@
 </head>
 <body>
   <header class="top">
-    <div class="brand"><span aria-hidden="true">▤</span> StdOverwatch</div>
+    <div class="brand"><i class="brand-mark" aria-hidden="true"></i>StdOverwatch</div>
     <nav aria-label="工作区">
       <button id="read-tab" aria-current="page">课件阅读</button>
       <button id="review-tab">复习工作台</button>
@@ -26,6 +26,8 @@
   </header>
   <main class="layout">
     <aside class="library" aria-label="课件库">
+      <button class="library-toggle" id="library-toggle" aria-expanded="false" aria-controls="library-body">课表与课件库</button>
+      <div id="library-body">
       <div class="library-head">
         <div class="course-controls">
           <label for="course-picker">当前课表</label>
@@ -43,9 +45,11 @@
         <p id="library-status" role="status" class="muted"></p>
       </div>
       <div id="deck-list" class="deck-list"></div>
+      </div>
     </aside>
     <section id="empty-panel" class="work empty" aria-label="开始阅读" hidden>
       <div>
+        <div class="folio-art" aria-hidden="true"><i></i><i></i><i></i></div>
         <h2>导入课件，开始阅读</h2>
         <button id="empty-import" class="primary">选择课件</button>
       </div>

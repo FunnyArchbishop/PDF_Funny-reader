@@ -138,3 +138,115 @@ pre{overflow:auto}
 .study-text details{padding:.5rem;margin:.5rem 0;border:1px solid var(--line);border-radius:8px}
 @media(max-width:1100px){.layout{grid-template-columns:195px minmax(0,1fr)}.chat{grid-column:2;border-left:0;border-top:1px solid var(--line)}.library{grid-row:1/span 2}}
 @media(max-width:650px){.top{flex-wrap:wrap;font-size:.9rem}.layout{display:block}.library,.chat{border-right:0}.library-head{padding-bottom:0}.deck-list{max-height:190px}.review-grid{grid-template-columns:1fr}.toolbar{gap:.35rem}}
+
+/* Workspace surfaces and typography */
+:root {
+  --frame: #dcdde4;
+  --bar: #202233;
+  --rail: color-mix(in srgb, var(--paper) 76%, var(--canvas));
+  --shadow: 0 6px 22px -16px rgb(30 31 55 / .35);
+}
+:root[data-theme="dark"] { --frame: #0e131c; }
+.brand {display:flex; align-items:center; gap:.65rem; letter-spacing:-.035em; font-size:1.24rem}
+.brand-mark {
+  width:1.95rem; height:1.95rem; display:grid; place-items:center;
+  background:var(--accent-light); color:#202233; border-radius:.55rem;
+}
+.brand-mark::before {
+  content:""; width:.72rem; height:.9rem; border:2px solid; border-radius:2px;
+  box-shadow:3px 3px 0 -1px var(--accent-light),4px 4px 0 0 currentColor;
+  transform:translate(-2px,-2px) rotate(-8deg);
+}
+.top {padding-inline:clamp(1rem,2vw,2.2rem)}
+.top nav {border:1px solid #ffffff25; border-radius:2rem; padding:3px; background:#ffffff08}
+.top nav button {border-radius:2rem; padding:.34rem 1rem}
+.top nav button[aria-current] {background:var(--paper); color:var(--ink); font-weight:650}
+.top-actions button {font-size:.89rem}
+.library {background:var(--rail)}
+.library-toggle {display:none}
+.library-head,.chat {padding:1.15rem}
+.library-head h1,.chat h2 {font-size:1.13rem}
+.library-head h1 {display:flex; align-items:center; justify-content:space-between}
+.library-head h1 small {font-size:.75rem; font-variant-numeric:tabular-nums}
+.course-controls {gap:.5rem; padding-bottom:1.1rem; margin-bottom:1.1rem}
+.course-controls label,.eyebrow {font-size:.78rem; font-weight:650; letter-spacing:.045em}
+.course-actions button {background:transparent}
+.file {font-size:.9rem}
+#deck-search {margin-top:.25rem}
+#library-status:empty,.chips:empty,.messages:empty {display:none}
+.deck-list button {padding:.65rem .75rem; margin:.15rem 0; font-size:.94rem}
+.deck-list button[aria-current] {box-shadow:inset 3px 0 var(--accent-text); border-color:transparent}
+.deck-list small {margin-top:.18rem; font-size:.76rem}
+.work {min-width:0; padding:clamp(1rem,1.65vw,2rem)}
+.work-head {margin-bottom:.85rem}
+.work-head h2 {font-weight:730; line-height:1.3; letter-spacing:-.025em}
+#deck-group {margin-bottom:.25rem; color:var(--accent-text)}
+#reader-panel > .toolbar {
+  gap:.32rem; background:var(--paper); border:1px solid var(--line);
+  padding:.4rem; border-radius:12px; box-shadow:var(--shadow);
+}
+#reader-panel > .toolbar button {font-size:.86rem; padding:.4rem .56rem; border-color:transparent}
+#reader-panel > .toolbar button[aria-pressed="true"] {border-color:var(--accent-border)}
+#page {width:3.6rem; padding:.32rem .45rem; font-variant-numeric:tabular-nums}
+#total {font-size:.82rem}
+.preview {border:1px solid var(--line); box-shadow:var(--shadow)}
+.page-tools,.review form,.review-card {
+  background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:1rem;
+}
+.page-tools label,.note-label,.text-panel summary,#chat-form label {font-weight:650; font-size:.93rem}
+.page-tools select {border:0; border-radius:4px}
+.chat-head {padding-bottom:1rem; margin-bottom:1rem; border-bottom:1px solid var(--line)}
+.chat-head h2 {display:flex; align-items:center; gap:.55rem}
+.chat-head h2::before {
+  content:"✦"; display:grid; place-items:center; width:2rem; height:2rem;
+  border-radius:.7rem; background:var(--soft); color:var(--accent-text);
+}
+#chat-context {margin-top:.5rem}
+#chat-form {display:grid; justify-items:start; gap:.5rem}
+#chat-form textarea {margin:0; background:var(--rail); padding:.75rem}
+#chat-form button {justify-self:end; padding-inline:1.25rem}
+.review form,.review-card {box-shadow:var(--shadow)}
+.review form {padding:clamp(1rem,2vw,1.65rem)}
+.review-grid {align-items:start}
+dialog {box-shadow:0 18px 72px rgb(10 15 32 / .25)}
+.empty {
+  background-image:radial-gradient(color-mix(in srgb,var(--line) 80%,transparent) .85px,transparent .85px);
+  background-size:18px 18px;
+}
+.empty > div {display:grid; justify-items:center; padding:2.5rem 1rem}
+.empty h2 {letter-spacing:-.04em; font-size:clamp(1.4rem,2.8vw,2.25rem)}
+.empty button {margin-top:1.2rem; padding:.65rem 1.6rem}
+.folio-art {width:16rem; height:10.5rem; position:relative; margin-bottom:1.7rem}
+.folio-art i {
+  position:absolute; inset:.6rem 2.3rem 1rem; background:var(--paper);
+  border:1px solid var(--accent-border); border-radius:.65rem; box-shadow:var(--shadow);
+}
+.folio-art i:first-child {transform:translate(-1.25rem,.15rem) rotate(-15deg); background:var(--accent-light)}
+.folio-art i:nth-child(2) {transform:translate(.8rem,-.3rem) rotate(10deg); background:var(--soft)}
+.folio-art i:nth-child(3) {transform:rotate(-4deg); overflow:hidden}
+.folio-art i:nth-child(3)::before {
+  content:""; position:absolute; inset:1rem 1rem 2.7rem; border-radius:.3rem;
+  background:radial-gradient(circle at 73% 30%,#fff2bf 0 8%,transparent 8.6%),
+    linear-gradient(145deg,transparent 50%,var(--accent) 50.6%),
+    linear-gradient(32deg,var(--accent-text) 38%,var(--accent-light) 38.6%);
+}
+.folio-art i:nth-child(3)::after {
+  content:""; position:absolute; bottom:1.6rem; left:1rem; width:47%; height:4px;
+  border-radius:4px; background:var(--accent-border); box-shadow:0 8px 0 var(--line);
+}
+@media(min-width:1101px) {
+  .layout {grid-template-columns:clamp(205px,16vw,260px) minmax(0,1fr) clamp(265px,21vw,350px)}
+}
+@media(max-width:650px) {
+  .top {display:grid; grid-template-columns:1fr auto; gap:.65rem; padding:.8rem 1rem}
+  .top nav {grid-row:2; grid-column:1/-1; justify-self:center}
+  .top-actions {grid-column:2; grid-row:1}
+  .library {border-bottom:1px solid var(--line)}
+  .library-toggle {display:flex; align-items:center; justify-content:space-between; width:100%;
+    padding:.7rem 1rem; border:0; border-radius:0; background:var(--rail); font-weight:650}
+  .library-toggle::after {content:"⌄"; color:var(--accent-text)}
+  .library-toggle[aria-expanded="true"]::after {transform:rotate(180deg)}
+  .library-toggle[aria-expanded="false"] + #library-body {display:none}
+  .empty {min-height:65vh}
+  .work,.chat {padding:1rem}
+}

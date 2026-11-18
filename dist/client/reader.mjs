@@ -575,6 +575,12 @@ function exportStudy() {
 
 $("files").addEventListener("change", event => void importFiles(event.target));
 $("folder").addEventListener("change", event => void importFiles(event.target));
+const libraryToggle = $("library-toggle");
+libraryToggle.onclick = () => libraryToggle.setAttribute("aria-expanded",
+  String(libraryToggle.getAttribute("aria-expanded") !== "true"));
+$("deck-list").addEventListener("click", event => {
+  if (event.target.closest("button")) libraryToggle.setAttribute("aria-expanded", "false");
+});
 $("deck-search").addEventListener("input", library);
 $("deck-list").addEventListener("click", event => {
   const id = event.target.closest("button[data-deck]")?.dataset.deck;
